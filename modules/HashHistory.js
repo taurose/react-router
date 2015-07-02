@@ -121,5 +121,5 @@ class HashHistory extends DOMHistory {
   }
 }
 
-export var history = new HashHistory;
+export var history = new HashHistory({queryKey: true});
 export default HashHistory;

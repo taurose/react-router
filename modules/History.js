@@ -5,6 +5,7 @@ import { getPathname, getQueryString, parseQueryString } from './URLUtils';
 import Location from './Location';
 
 var RequiredHistorySubclassMethods = [ 'push', 'replace', 'go' ];
+var StateKey = '_sessions';
 
 /**
  * A history interface that normalizes the differences across
@@ -29,11 +30,103 @@ class History {
     this.parseQueryString = options.parseQueryString || parseQueryString;
 
     this.changeListeners = [];
-    this.beforeChangeListener = null;
+    // TODO
+    this.beforeChangeListener = (location, done) => {
+      if (location == null && this.location.state.key) {
+        // this makes only sense when leaving with a "push" that removes the next entries
+        //this.trimSession(this.location.state.key);
+        return;
+      }
+      done();
+    };
 
     this.path = null;
     this.location = null;
     this._pendingLocation = null;
+    this._actualLocation = null;
+
+    // TODO
+    this.state = {};
+    this.sessions = [];
+  }
+  readState(key) {
+    return this.state[key];
+  }
+  saveState(key, state) {
+    this.state[key] = state;
+  }
+
+  findInSessions(key) {
+    for (var i = 0; i < this.sessions.length; i++) {
+      var session = this.sessions[i];
+      for (var j = 0; j < session.length; j++) {
+        if (session[j] === key) {
+          return {
+            current: j,
+            length: session.length
+          };
+        }
+      }
+    }
+  }
+
+  trimSession(lastKey) {
+    for (var i = 0; i < this.sessions.length; i++) {
+      var session = this.sessions[i];
+      for (var j = 0; j < session.length; j++) {
+        if (session[j] === lastKey) {
+          this.sessions[i] = session.slice(0, j + 1);
+          this.saveState(StateKey, this.sessions);
+          return;
+        }
+      }
+    }
+  }
+
+  createSession(key) {
+    this.sessions.push([key]);
+    this.saveState(StateKey, this.sessions);
+
+    return {
+      current: 0,
+      length: 1
+    };
+  }
+
+  replaceInSession(oldKey, newKey) {
+    for (var i = 0; i < this.sessions.length; i++) {
+      var session = this.sessions[i];
+      for (var j = 0; j < session.length; j++) {
+        if (session[j] === oldKey) {
+          session[j] = newKey;
+
+          this.saveState(StateKey, this.sessions);
+
+          return {
+            current: j,
+            length: session.length
+          };
+        }
+      }
+    }
+  }
+
+  pushInSession(oldKey, newKey) {
+    for (var i = 0; i < this.sessions.length; i++) {
+      var session = this.sessions[i];
+      for (var j = 0; j < session.length; j++) {
+        if (session[j] === oldKey) {
+          this.sessions[i] = this.sessions[i].slice(0, j + 1).concat([newKey]);
+
+          this.saveState(StateKey, this.sessions);
+
+          return {
+            current: j + 1,
+            length: this.sessions[i].length
+          };
+        }
+      }
+    }
   }
 
   _notifyChange() {
@@ -57,7 +150,14 @@ class History {
       'beforeChange listener of History should not be overwritten'
     );
 
-    this.beforeChangeListener = listener;
+    // TODO
+    this.beforeChangeListener = (location, done) => {
+      if (location == null && this.location.state.key) {
+        this.trimSession(this.location.state.key);
+      }
+
+      listener.call(this, location, done);
+    };
   }
 
   setup(path, entry = {}) {
@@ -67,9 +167,14 @@ class History {
     if (!entry.key)
       entry = this.replace(path, this.createRandomKey());
 
+    this.sessions = this.readState(StateKey) || [];
+
     var state = null;
-    if (typeof this.readState === 'function')
+    if (entry.key) {
       state = this.readState(entry.key);
+      var session = this.findInSessions(entry.key) || this.createSession(entry.key);
+      Object.assign(entry, session);
+    }
 
     var location = this._createLocation(path, state, entry, NavigationTypes.POP);
     this._update(path, location, false);
@@ -86,10 +191,14 @@ class History {
 
   handlePop(path, entry={}) {
     var state = null;
-    if (entry.key && typeof this.readState === 'function')
+    if (entry.key) {
       state = this.readState(entry.key);
+      var session = this.findInSessions(entry.key);
+      Object.assign(entry, session);
+    }
 
     var pendingLocation = this._createLocation(path, state, entry, NavigationTypes.POP);
+    this._actualLocation = location;
 
     this.beforeChange(pendingLocation, () => {
       this._update(path, pendingLocation);
@@ -103,23 +212,14 @@ class History {
   _saveNewState(state) {
     var key = this.createRandomKey();
 
-    if (state != null) {
-      invariant(
-        typeof this.saveState === 'function',
-        '%s needs a saveState method in order to store state',
-        this.constructor.name
-      );
-
+    if (state != null)
       this.saveState(key, state);
-    }
 
     return key;
   }
 
   canUpdateState() {
-    return typeof this.readState === 'function'
-      && typeof this.saveState === 'function'
-      && this.location
+    return this.location
       && this.location.state
       && this.location.state.key;
   }
@@ -139,18 +239,19 @@ class History {
   beforeChange(location, done) {
     if (!this.beforeChangeListener) {
       done();
-    } else {
-      this._pendingLocation = location;
-
-      this.beforeChangeListener.call(this, location, () => {
-        if (this._pendingLocation === location) {
-          this._pendingLocation = null;
-          done();
-          return true;
-        }
-        return false;
-      });
+      return;
     }
+
+    this._pendingLocation = location;
+
+    this.beforeChangeListener.call(this, location, () => {
+      if (this._pendingLocation === location) {
+        this._pendingLocation = null;
+        done();
+        return true;
+      }
+      return false;
+    });
   }
 
   isPending(location) {
@@ -168,7 +269,8 @@ class History {
     var key = this._saveNewState(state);
     var entry = null;
 
-    if (this.path === path) {
+    var replace = (this.path === path);
+    if (replace) {
       entry = this.replace(path, key) || {};
     } else {
       entry = this.push(path, key) || {};
@@ -179,6 +281,16 @@ class History {
       '%s does not support storing state',
       this.constructor.name
     );
+
+    if (entry.key && this.location.state.key) {
+      var session = null;
+      if (replace) {
+        session = this.replaceInSession(this.location.state.key, entry.key);
+      } else {
+        session = this.pushInSession(this.location.state.key, entry.key);
+      }
+      Object.assign(entry, session);
+    }
 
     var location = this._createLocation(path, state, entry, NavigationTypes.PUSH);
     this._update(path, location);
@@ -201,6 +313,11 @@ class History {
       this.constructor.name
     );
 
+    if (entry.key && this.location.state.key) {
+      var session = this.replaceInSession(this.location.state.key, entry.key);
+      Object.assign(entry, session);
+    }
+
     var location = this._createLocation(path, state, entry, NavigationTypes.REPLACE);
     this._update(path, location);
   }
@@ -216,6 +333,7 @@ class History {
   _update(path, location, notify=true) {
     this.path = path;
     this.location = location;
+    this._actualLocation = location;
     this._pendingLocation = null;
 
     if (notify)

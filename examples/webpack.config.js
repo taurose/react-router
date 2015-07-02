@@ -6,16 +6,36 @@ function isDirectory(dir) {
   return fs.lstatSync(dir).isDirectory();
 }
 
+var examples = fs.readdirSync(__dirname).filter(function (dir) {
+  var isDraft = dir.charAt(0) === '_';
+  return !isDraft && isDirectory(path.join(__dirname, dir));
+});
+
+var rewrites = examples
+  .filter(function(example) {
+    return example.indexOf('browser') === 0;
+  })
+  .map(function (example) {
+    return {
+      from: new RegExp("^\\/" + example + "\\/"),
+      to: function (context) {
+        if (context.parsedUrl.pathname.indexOf('.') !== -1) {
+          return context.parsedUrl.pathname;
+        }
+
+        return example + "/index.html";
+      }
+    };
+  });
+
+console.log(rewrites);
+
 module.exports = {
 
   devtool: 'inline-source-map',
 
-  entry: fs.readdirSync(__dirname).reduce(function (entries, dir) {
-    var isDraft = dir.charAt(0) === '_';
-
-    if (!isDraft && isDirectory(path.join(__dirname, dir)))
-      entries[dir] = path.join(__dirname, dir, 'app.js');
-
+  entry: examples.reduce(function(entries, dir){
+    entries[dir] = path.join(__dirname, dir, 'app.js');
     return entries;
   }, {}),
 
@@ -44,6 +64,13 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
     })
-  ]
+  ],
+
+  devServer: {
+    historyApiFallback: {
+      rewrites: rewrites,
+      verbose: true
+    }
+  }
 
 };
