@@ -1,5 +1,5 @@
 import React, { findDOMNode } from 'react';
-import { Router, Route, Link, Navigation } from 'react-router';
+import { RouterComponent as Router, Route, Link, Navigation } from 'react-router';
 import HashHistory from 'react-router/lib/HashHistory';
 import auth from './auth';
 var history = new HashHistory({ queryKey: true });

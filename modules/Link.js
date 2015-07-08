@@ -1,4 +1,5 @@
 import React from 'react';
+import isActive from './isActive';
 
 var { object, string, func } = React.PropTypes;
 
@@ -31,7 +32,8 @@ function isModifiedEvent(event) {
 export var Link = React.createClass({
 
   contextTypes: {
-    router: object
+    router: object,
+    location: object
   },
 
   propTypes: {
@@ -71,7 +73,7 @@ export var Link = React.createClass({
   },
 
   render() {
-    var { router } = this.context;
+    var { location, router } = this.context;
     var { to, query } = this.props;
 
     var props = Object.assign({}, this.props, {
@@ -80,7 +82,7 @@ export var Link = React.createClass({
     });
 
     // ignore if rendered outside of the context of a router, simplifies unit testing
-    if (router && router.isActive(to, query)) {
+    if (router && isActive(location, to, query)) {
       if (props.activeClassName)
         props.className += props.className !== '' ? ` ${props.activeClassName}` : props.activeClassName;
 

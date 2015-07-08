@@ -2,7 +2,7 @@ import expect from 'expect';
 import React, { render } from 'react';
 import HashHistory from '../HashHistory';
 import { getWindowScrollPosition } from '../DOMUtils';
-import Router from '../Router';
+import Router from '../RouterComponent';
 import Route from '../Route';
 
 describe('Scroll management', function () {
@@ -45,12 +45,12 @@ describe('Scroll management', function () {
         expect(this.state.location.pathname).toEqual('/');
         window.scrollTo(100, 100);
         expect(getWindowScrollPosition()).toEqual({ scrollX: 100, scrollY: 100 });
-        this.transitionTo('/inbox');
+        this.router.transitionTo('/inbox');
       },
       function () {
         expect(this.state.location.pathname).toEqual('/inbox');
         expect(getWindowScrollPosition()).toEqual({ scrollX: 0, scrollY: 0 });
-        this.goBack();
+        this.router.goBack();
       },
       function () {
         expect(this.state.location.pathname).toEqual('/');

@@ -1,6 +1,6 @@
 import React from 'react';
 import { history } from 'react-router/lib/HashHistory';
-import { Router, Route, Link, Redirect } from 'react-router';
+import { RouterComponent as Router, Route, Link, Redirect } from 'react-router';
 
 var App = React.createClass({
   render() {

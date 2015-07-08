@@ -1,7 +1,7 @@
 import expect from 'expect';
 import React, { render } from 'react';
 import MemoryHistory from '../MemoryHistory';
-import Router from '../Router';
+import Router from '../RouterComponent';
 import Route from '../Route';
 
 describe('transitionTo', function () {
@@ -31,7 +31,7 @@ describe('transitionTo', function () {
       var steps = [
         function () {
           expect(this.state.location.pathname).toEqual('/');
-          this.transitionTo('/home/hi:there');
+          this.router.transitionTo('/home/hi:there');
         },
         function () {
           expect(this.state.location.pathname).toEqual('/home/hi:there');

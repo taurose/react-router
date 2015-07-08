@@ -1,6 +1,6 @@
 import React from 'react';
 import { history } from 'react-router/lib/HashHistory';
-import { Router } from 'react-router';
+import { RouterComponent as Router } from 'react-router';
 import AsyncProps from 'react-router/lib/experimental/AsyncProps';
 import stubbedCourses from './stubs/COURSES';
 

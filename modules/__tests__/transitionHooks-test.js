@@ -1,7 +1,7 @@
 import expect, { spyOn } from 'expect';
 import React, { render, createClass } from 'react';
 import MemoryHistory from '../MemoryHistory';
-import Router from '../Router';
+import Router from '../RouterComponent';
 import Route from '../Route';
 
 describe('When a router enters a branch', function () {
@@ -139,7 +139,7 @@ describe('When a router enters a branch', function () {
       var steps = [
         function () {
           expect(inboxRouteEnterSpy).toHaveBeenCalled('InboxRoute.onEnter was not called');
-          this.transitionTo('/news');
+          this.router.transitionTo('/news');
         },
         function () {
           expect(inboxRouteLeaveSpy).toHaveBeenCalled('InboxRoute.onLeave was not called');
@@ -171,7 +171,7 @@ describe('When a router enters a branch', function () {
         function () {
           expect(dashboardRouteEnterSpy).toHaveBeenCalled('DashboardRoute.onEnter was not called');
           expect(messageRouteEnterSpy).toHaveBeenCalled('InboxRoute.onEnter was not called');
-          this.transitionTo('/messages/456');
+          this.router.transitionTo('/messages/456');
         },
         function () {
           expect(messageRouteLeaveSpy).toHaveBeenCalled('MessageRoute.onLeave was not called');

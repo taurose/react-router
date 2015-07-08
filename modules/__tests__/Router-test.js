@@ -1,7 +1,7 @@
 import expect from 'expect';
 import React, { render } from 'react';
 import MemoryHistory from '../MemoryHistory';
-import Router from '../Router';
+import Router from '../RouterComponent';
 import Route from '../Route';
 
 describe('Router', function () {

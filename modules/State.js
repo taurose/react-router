@@ -1,4 +1,5 @@
 import React from 'react';
+import isActive from './isActive';
 
 var { object } = React.PropTypes;
 
@@ -25,20 +26,13 @@ var { object } = React.PropTypes;
 var State = {
 
   contextTypes: {
-    router: object.isRequired
+    location: object.isRequired
+  },
+
+  isActive(pathname, query) {
+    return isActive(this.context.location, pathname, query);
   }
 
 };
-
-var RouterStateMethods = [
-  'isActive'
-];
-
-RouterStateMethods.forEach(function (method) {
-  State[method] = function () {
-    var router = this.context.router;
-    return router[method].apply(router, arguments);
-  };
-});
 
 export default State;

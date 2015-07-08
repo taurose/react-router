@@ -2,7 +2,7 @@ import expect from 'expect';
 import React, { render } from 'react';
 import MemoryHistory from '../MemoryHistory';
 import TransitionHook from '../TransitionHook';
-import Router from '../Router';
+import Router from '../RouterComponent';
 import Route from '../Route';
 
 describe('TransitionHook', function () {
@@ -30,7 +30,7 @@ describe('TransitionHook', function () {
       function () {
         expect(this.state.location.pathname).toEqual('/one');
         expect(div.textContent.trim()).toEqual('one');
-        this.transitionTo('/two')
+        this.router.transitionTo('/two')
       },
       function () {
         expect(hookCalled).toBe(true);

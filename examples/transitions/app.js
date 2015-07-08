@@ -1,5 +1,5 @@
 import React, { findDOMNode } from 'react';
-import { Router, Route, Link, Navigation, TransitionHook } from 'react-router';
+import { RouterComponent as Router, Route, Link, Navigation, TransitionHook } from 'react-router';
 import { history } from 'react-router/lib/HashHistory';
 
 var App = React.createClass({

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Router, Link } from 'react-router';
+import { RouterComponent as Router, Link } from 'react-router';
 import HashHistory from 'react-router/lib/HashHistory';
 var history = new HashHistory({ queryKey: 'k' });
 

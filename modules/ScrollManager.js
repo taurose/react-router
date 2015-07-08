@@ -1,14 +1,12 @@
-import React from 'react';
 import { canUseDOM, setWindowScrollPosition } from './DOMUtils';
 import NavigationTypes from './NavigationTypes';
 
-var { func } = React.PropTypes;
 
 function getCommonAncestors(branch, otherBranch) {
   return branch.filter(route => otherBranch.indexOf(route) !== -1);
 }
 
-function shouldUpdateScrollPosition(state, prevState) {
+function shouldUpdate(state, prevState) {
   var { location, branch } = state;
   var { location: prevLocation, branch: prevBranch } = prevState;
 
@@ -41,30 +39,23 @@ function updateWindowScrollPosition(navigationType, scrollX, scrollY) {
   }
 }
 
-var ScrollManagementMixin = {
+class ScrollManager {
 
-  propTypes: {
-    shouldUpdateScrollPosition: func.isRequired,
-    updateScrollPosition: func.isRequired
-  },
+  constructor(shouldUpdateScrollPosition=shouldUpdate, updateScrollPosition=updateWindowScrollPosition){
+    this.shouldUpdate = shouldUpdateScrollPosition;
+    this.update = updateScrollPosition;
+  }
 
-  getDefaultProps() {
-    return {
-      shouldUpdateScrollPosition,
-      updateScrollPosition: updateWindowScrollPosition
-    };
-  },
-
-  componentDidUpdate(prevProps, prevState) {
-    var { location } = this.state;
+  restore(state, prevState) {
+    var { location } = state;
     var locationState = location && location.state;
 
-    if (locationState && this.props.shouldUpdateScrollPosition(this.state, prevState)) {
+    if (locationState && this.shouldUpdate(state, prevState)) {
       var { scrollX, scrollY } = locationState;
-      this.props.updateScrollPosition(location.navigationType, scrollX || 0, scrollY || 0);
+      this.update(location.navigationType, scrollX || 0, scrollY || 0);
     }
   }
 
-};
+}
 
-export default ScrollManagementMixin;
+export default ScrollManager;

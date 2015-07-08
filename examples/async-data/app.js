@@ -1,6 +1,6 @@
 import React from 'react';
 import { history } from 'react-router/lib/HashHistory';
-import { Router, Route, Link, Navigation } from 'react-router';
+import { RouterComponent as Router, Route, Link, Navigation } from 'react-router';
 import { loadContacts, loadContact, createContact } from './utils';
 import AsyncProps from 'react-router/lib/experimental/AsyncProps';
 

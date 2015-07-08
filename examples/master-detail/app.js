@@ -1,6 +1,6 @@
 import React, { findDOMNode } from 'react';
 import { history } from 'react-router/lib/HashHistory';
-import { Router, Navigation, Route, Link } from 'react-router';
+import { RouterComponent as Router, Navigation, Route, Link } from 'react-router';
 import ContactStore from './ContactStore';
 
 var App = React.createClass({

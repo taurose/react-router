@@ -2,6 +2,8 @@ import expect from 'expect';
 import React, { createClass, renderToString } from 'react';
 import Location from '../Location';
 import Router from '../Router';
+import StaticRouter from '../StaticRouter';
+import RouteRenderer from '../RouteRenderer';
 import Link from '../Link';
 
 describe('Server rendering', function () {
@@ -52,13 +54,15 @@ describe('Server rendering', function () {
   
   it('works', function (done) {
     var location = new Location('/inbox');
+    var router = new StaticRouter(routes);
 
-    Router.run(routes, location, function (error, state, transition) {
-      var string = renderToString(<Router {...state}/>);
+    router.getProps(location, (error, state, transition) => {
+      var string = renderToString(<RouteRenderer {...state} router={router} />);
       expect(string).toMatch(/Dashboard/);
       expect(string).toMatch(/Inbox/);
       done();
     });
+
   });
 
 });

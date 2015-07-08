@@ -1,7 +1,7 @@
 import assert from 'assert';
 import expect from 'expect';
 import React, { render } from 'react/addons';
-import Router from '../Router';
+import Router from '../RouterComponent';
 import MemoryHistory from '../MemoryHistory';
 import HashHistory from '../HashHistory';
 import Route from '../Route';
@@ -131,7 +131,7 @@ describe('A <Link>', function () {
         function () {
           a = div.querySelector('a');
           expect(a.className).toEqual('dontKillMe');
-          this.transitionTo('hello');
+          this.router.transitionTo('hello');
         },
         function () {
           expect(a.className).toEqual('dontKillMe');
@@ -175,7 +175,7 @@ describe('A <Link>', function () {
         function () {
           a = div.querySelector('a');
           expect(a.className).toEqual('dontKillMe');
-          this.transitionTo('hello');
+          this.router.transitionTo('hello');
         },
         function () {
           expect(a.className).toEqual('dontKillMe highlight');
@@ -217,7 +217,7 @@ describe('A <Link>', function () {
         function () {
           a = div.querySelector('a');
           expect(a.style.color).toEqual('white');
-          this.transitionTo('hello');
+          this.router.transitionTo('hello');
         },
         function () {
           expect(a.style.color).toEqual('red');
