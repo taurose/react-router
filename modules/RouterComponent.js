@@ -1,14 +1,7 @@
-import React, { createElement, isValidElement } from 'react';
-import warning from 'warning';
+import React from 'react';
 import invariant from 'invariant';
-import { loopAsync } from './AsyncUtils';
-import { createRoutes } from './RouteUtils';
-import { getState, getTransitionHooks, getComponents, getRouteParams, createTransitionHook } from './RoutingUtils';
-import { routes, component, components, history, location } from './PropTypes';
-import RouterContextMixin from './RouterContextMixin';
+import { routes, history } from './PropTypes';
 import { isLocation } from './Location';
-import Transition from './Transition';
-import runTransition from './runTransition';
 import Router from './Router';
 import RouteRenderer from './RouteRenderer';
 import ScrollManager from './ScrollManager';

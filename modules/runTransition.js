@@ -1,5 +1,4 @@
-import Transition from './Transition';
-import { getState, getTransitionHooks, getComponents, getRouteParams, createTransitionHook } from './RoutingUtils';
+import { getState, getTransitionHooks, getComponents, createTransitionHook } from './RoutingUtils';
 import { loopAsync } from './AsyncUtils';
 
 export default function runTransition(transition, routes, hooks, context, prevState, location, callback) {

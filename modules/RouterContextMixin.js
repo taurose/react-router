@@ -1,6 +1,5 @@
 import React from 'react';
-import invariant from 'invariant';
-import { stripLeadingSlashes, stringifyQuery } from './URLUtils';
+import { location } from './PropTypes';
 
 var { func, object } = React.PropTypes;
 
@@ -8,7 +7,7 @@ var RouterContextMixin = {
 
   propTypes: {
     router: object.isRequired,
-    location: object.isRequired
+    location: location.isRequired
   },
 
   childContextTypes: {

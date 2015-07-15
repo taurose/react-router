@@ -1,12 +1,8 @@
-import React from 'react';
-import invariant from 'invariant';
 import warning from 'warning';
 import StaticRouter from './StaticRouter';
 import Transition from './Transition';
 import runTransition from './runTransition';
-import { getState, getTransitionHooks, getComponents, getRouteParams, createTransitionHook } from './RoutingUtils';
-import { stripLeadingSlashes, stringifyQuery } from './URLUtils';
-import { loopAsync } from './AsyncUtils';
+import { createTransitionHook } from './RoutingUtils';
 
 class Router extends StaticRouter {
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import isActive from './isActive';
+import { location } from './PropTypes';
 
 var { object, string, func } = React.PropTypes;
 
@@ -33,7 +34,7 @@ export var Link = React.createClass({
 
   contextTypes: {
     router: object,
-    location: object
+    location: location
   },
 
   propTypes: {
